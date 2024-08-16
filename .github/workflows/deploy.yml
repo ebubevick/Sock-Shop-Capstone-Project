@@ -83,7 +83,7 @@ jobs:
     # Apply Ingress and ClusterIssuer configuration
     - name: Apply ClusterIssuer
       run: |
-        kubectl apply -f k8s-deployments/ingress.yaml 
+        timeout 30m kubectl apply -f k8s-deployments/ingress.yaml 
         kubectl apply -f k8s-deployments/issuer.yaml
 
     - name: Install Prometheus and Grafana # Install Prometheus and Grafana for monitoring

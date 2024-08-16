@@ -61,41 +61,41 @@ jobs:
         kubectl apply -f k8s-deployments/sockshop.yaml
 
     # Install Cert-Manager CRDs
-    - name: Install Cert-Manager CRDs
-      run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.crds.yaml
+    # - name: Install Cert-Manager CRDs
+    #   run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.crds.yaml
 
-    # Add Jetstack Helm repository
-    - name: Add Jetstack Helm repository
-      run: helm repo add jetstack https://charts.jetstack.io --force-update
+    # # Add Jetstack Helm repository
+    # - name: Add Jetstack Helm repository
+    #   run: helm repo add jetstack https://charts.jetstack.io --force-update
 
-    # Update Helm repositories
-    - name: Update Helm repositories
-      run: helm repo update
+    # # Update Helm repositories
+    # - name: Update Helm repositories
+    #   run: helm repo update
 
-    # Create Cert-Manager namespace if it doesn't exist
-    - name: Create Cert-Manager namespace
-      run: kubectl create namespace cert-manager || true
+    # # Create Cert-Manager namespace if it doesn't exist
+    # - name: Create Cert-Manager namespace
+    #   run: kubectl create namespace cert-manager || true
 
-    # Install or upgrade Cert-Manager
-    - name: Install or Upgrade Cert-Manager
-      run: helm upgrade --install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager
+    # # Install or upgrade Cert-Manager
+    # - name: Install or Upgrade Cert-Manager
+    #   run: helm upgrade --install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager
 
-    # # Apply Ingress and ClusterIssuer configuration and 
-    # - name: Apply ClusterIssuer
+     # Apply Ingress and ClusterIssuer configuration and 
+     # - name: Apply ClusterIssuer
+     #   run: |
+     #     kubectl apply -f k8s-deployments/ingress.yaml 
+     #     kubectl apply -f k8s-deployments/issuer.yaml
+
+    # - name: Install Prometheus and Grafana # Install Prometheus and Grafana for monitoring
     #   run: |
-    #     kubectl apply -f k8s-deployments/ingress.yaml 
-    #     kubectl apply -f k8s-deployments/issuer.yaml
-
-    - name: Install Prometheus and Grafana # Install Prometheus and Grafana for monitoring
-      run: |
-        kubectl apply -f monitor/manifests-monitoring/00-monitoring-ns.yaml
-        kubectl apply $(ls monitor/manifests-monitoring/*-prometheus-*.yaml | awk '{ print " -f " $1 }')
-        kubectl apply $(ls monitor/manifests-monitoring/*-grafana-*.yaml | awk '{ print " -f " $1 }' | grep -v grafana-import)
-        kubectl apply -f monitor/manifests-monitoring/23-grafana-import-dash-batch.yaml
+    #     kubectl apply -f monitor/manifests-monitoring/00-monitoring-ns.yaml
+    #     kubectl apply $(ls monitor/manifests-monitoring/*-prometheus-*.yaml | awk '{ print " -f " $1 }')
+    #     kubectl apply $(ls monitor/manifests-monitoring/*-grafana-*.yaml | awk '{ print " -f " $1 }' | grep -v grafana-import)
+    #     kubectl apply -f monitor/manifests-monitoring/23-grafana-import-dash-batch.yaml
     
 
-    - name: Install EFK Stack # Install Elasticsearch, Fluentd, and Kibana for logging
-      run: |
-        kubectl apply -f logging/manifests-logging/
+    # - name: Install EFK Stack # Install Elasticsearch, Fluentd, and Kibana for logging
+    #   run: |
+    #     kubectl apply -f logging/manifests-logging/
 
         

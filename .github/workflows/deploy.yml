@@ -17,12 +17,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3  # Check out the repository code
 
-    - name: Azure Login
-      uses: azure/login@v1.4.0
+    - name: Azure login
+      uses: azure/login@v1
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} # Log in to Azure using credentials from secrets
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }} # Log in to Azure using credentials from secrets
   
     - name: Azure CLI script  # Verify Azure account details
       uses: azure/CLI@v1

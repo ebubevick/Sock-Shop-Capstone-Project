@@ -32,6 +32,11 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: latest  # Set up Terraform with the latest version
+        
+    - name: Install prerequisites # Install tools using tools.sh script
+      run: |
+        chmod +x prerequisitie-install/tools.sh
+        prerequisitie-install/tools.sh  # Execute the tools.sh script
 
     - name: Terraform Init
       run: terraform init

@@ -59,7 +59,6 @@ jobs:
     - name: Deploy Kubernetes resources # Deploy application and related Kubernetes resources
       run: |
         kubectl apply -f k8s-deployments/sockshop.yaml
-        kubectl apply -f k8s-deployments/ingress.yaml 
 
     # Install Cert-Manager CRDs
     - name: Install Cert-Manager CRDs
@@ -81,9 +80,11 @@ jobs:
     - name: Install or Upgrade Cert-Manager
       run: helm upgrade --install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager
 
-    # Apply ClusterIssuer configuration
+    # Apply Ingress and ClusterIssuer configuration and 
     - name: Apply ClusterIssuer
-      run: kubectl apply -f k8s-deployments/issuer.yaml
+      run: |
+        kubectl apply -f k8s-deployments/ingress.yaml 
+        kubectl apply -f k8s-deployments/issuer.yaml
 
     - name: Install Prometheus and Grafana # Install Prometheus and Grafana for monitoring
       run: |

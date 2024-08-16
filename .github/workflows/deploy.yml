@@ -35,15 +35,15 @@ jobs:
 
     - name: Terraform Init
       run: terraform init
-      working-directory: ./terraform  # Initialize Terraform
+      working-directory: ./tf-provision  # Initialize Terraform
 
     - name: Terraform Plan
       run: terraform plan
-      working-directory: ./terraform  # Create a Terraform execution plan
+      working-directory: ./tf-provision  # Create a Terraform execution plan
 
     - name: Terraform Apply
       run: terraform apply --auto-approve
-      working-directory: ./terraform  # Apply the Terraform plan
+      working-directory: ./tf-provision  # Apply the Terraform plan
 
     - name: Update kubeconfig # Update kubeconfig to use the AKS cluster
       run: az aks get-credentials --resource-group vick-capstone-rg --name vick-capstone-aks-cluster --overwrite-existing  

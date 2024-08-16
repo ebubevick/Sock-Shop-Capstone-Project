@@ -49,8 +49,8 @@ jobs:
       run: az aks get-credentials --resource-group vick-capstone-rg --name vick-capstone-aks-cluster --overwrite-existing  
 
     - name: Install NGINX Ingress Controller # Install NGINX Ingress Controller
-      run: kubectl apply -f https://github.com/kubernetes/ingress-nginx/blob/main/deploy/static/provider/cloud/deploy.yaml  
-
+      run: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.1/deploy/static/provider/cloud/deploy.yaml
+      
     - name: Deploy Kubernetes resources # Deploy application and related Kubernetes resources
       run: |
         kubectl apply -f k8s-deployments/sockshop.yaml

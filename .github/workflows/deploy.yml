@@ -38,17 +38,17 @@ jobs:
         chmod +x prerequisitie-install/tools.sh
         prerequisitie-install/tools.sh  # Execute the tools.sh script
 
-    # - name: Terraform Init
-    #   run: terraform init
-    #   working-directory: ./tf-provision  # Initialize Terraform
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./tf-provision  # Initialize Terraform
 
-    # - name: Terraform Plan
-    #   run: terraform plan
-    #   working-directory: ./tf-provision  # Create a Terraform execution plan
+    - name: Terraform Plan
+      run: terraform plan
+      working-directory: ./tf-provision  # Create a Terraform execution plan
 
-    # - name: Terraform Apply
-    #   run: terraform apply --auto-approve
-    #   working-directory: ./tf-provision  # Apply the Terraform plan
+    - name: Terraform Apply
+      run: terraform apply --auto-approve
+      working-directory: ./tf-provision  # Apply the Terraform plan
 
     - name: Update kubeconfig # Update kubeconfig to use the AKS cluster
       run: az aks get-credentials --resource-group vick-capstone-rg --name vick-capstone-aks-cluster --overwrite-existing  
@@ -61,21 +61,27 @@ jobs:
         kubectl apply -f k8s-deployments/sockshop.yaml
         kubectl apply -f k8s-deployments/ingress.yaml 
 
+    # Install Cert-Manager CRDs
     - name: Install Cert-Manager CRDs
       run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.crds.yaml
 
+    # Add Jetstack Helm repository
     - name: Add Jetstack Helm repository
       run: helm repo add jetstack https://charts.jetstack.io --force-update
 
+    # Update Helm repositories
     - name: Update Helm repositories
       run: helm repo update
 
-    # - name: Create Cert Namespace
-    #   run: kubectl create namespace cert-manager
+    # Create Cert-Manager namespace if it doesn't exist
+    - name: Create Cert-Manager namespace
+      run: kubectl create namespace cert-manager || true
 
-    # - name: Install Cert-Manager in cert-manager namespace
-    #   run: helm install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager
+    # Install or upgrade Cert-Manager
+    - name: Install or Upgrade Cert-Manager
+      run: helm upgrade --install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager
 
+    # Apply ClusterIssuer configuration
     - name: Apply ClusterIssuer
       run: kubectl apply -f k8s-deployments/issuer.yaml
 

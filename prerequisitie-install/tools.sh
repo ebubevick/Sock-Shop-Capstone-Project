@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit script on any error
-set -e
+# set -e
 
 echo "Installing prerequisites..."
 

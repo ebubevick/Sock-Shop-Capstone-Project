@@ -1,0 +1,70 @@
+name: capstone-pipeline
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push events to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3  # Check out the repository code
+
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}  # Log in to Azure using credentials from secrets
+  
+    - name: Azure CLI script  # Verify Azure account details
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az account show  
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: latest  # Set up Terraform with the latest version
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./terraform  # Initialize Terraform
+
+    - name: Terraform Plan
+      run: terraform plan
+      working-directory: ./terraform  # Create a Terraform execution plan
+
+    - name: Terraform Apply
+      run: terraform apply --auto-approve
+      working-directory: ./terraform  # Apply the Terraform plan
+
+    - name: Update kubeconfig # Update kubeconfig to use the AKS cluster
+      run: az aks get-credentials --resource-group vick-capstone-rg --name vick-capstone-aks-cluster --overwrite-existing  
+
+    - name: Install NGINX Ingress Controller # Install NGINX Ingress Controller
+      run: kubectl apply -f https://github.com/kubernetes/ingress-nginx/blob/main/deploy/static/provider/cloud/deploy.yaml  
+
+    - name: Deploy Kubernetes resources # Deploy application and related Kubernetes resources
+      run: |
+        kubectl apply -f k8s-deployments/sockshop.yaml
+        kubectl apply -f k8s-deployments/ingress.yaml
+        kubectl apply -f k8s-deployments/issuer.yaml  
+
+    - name: Install Prometheus and Grafana # Install Prometheus and Grafana for monitoring
+      run: |
+        kubectl apply -f monitor/manifests-monitoring/00-monitoring-ns.yaml
+        kubectl apply $(ls monitor/manifests-monitoring/*-prometheus-*.yaml | awk '{ print " -f " $1 }')
+        kubectl apply $(ls monitor/manifests-monitoring/*-grafana-*.yaml | awk '{ print " -f " $1 }' | grep -v grafana-import)
+        kubectl apply -f monitor/manifests-monitoring/23-grafana-import-dash-batch.yaml
+    
+
+    - name: Install EFK Stack # Install Elasticsearch, Fluentd, and Kibana for logging
+      run: |
+        kubectl apply -f logging/manifests-logging/
+

@@ -72,7 +72,7 @@ jobs:
 
     - name: Install Cert-Manager in cert-manager namespace
       run: |
-        kubectl create namespace cert-manager || true
+        # kubectl create namespace cert-manager || true
         helm install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager
 
     - name: Apply ClusterIssuer

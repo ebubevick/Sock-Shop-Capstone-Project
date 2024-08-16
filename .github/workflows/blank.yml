@@ -28,11 +28,6 @@ jobs:
         inlineScript: |
           az account show  
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: latest  # Set up Terraform with the latest version
-        
     - name: Install prerequisites # Install tools using tools.sh script
       run: |
         chmod +x prerequisitie-install/tools.sh
